@@ -116,6 +116,12 @@ typedef enum
 // Object instance init and rear view setting
 - (id)initWithRearViewController:(UIViewController *)rearViewController frontViewController:(UIViewController *)frontViewController;
 
+// Scale down when toggle reveal
+@property (assign, nonatomic) CGFloat frontViewScaleDownRatio;
+
+// Front view controller, base background color
+@property (strong, nonatomic) UIColor * frontViewBackgroundColor;
+
 // Rear view controller, can be nil if not used
 @property (strong, nonatomic) UIViewController *rearViewController;
 
