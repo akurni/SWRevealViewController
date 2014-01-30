@@ -902,6 +902,10 @@ static NSString * const SWSegueRightIdentifier = @"sw_right";
 //    if ( recognizer != _panGestureRecognizer || _animationQueue.count != 0 )
 //        return NO;
     
+    if (_frontViewScaleDownRatio != 1.0f) {
+        return NO;
+    }
+    
     // forbid gesture if the following delegate is implemented and returns NO
     if ( [_delegate respondsToSelector:@selector(revealControllerPanGestureShouldBegin:)] )
         if ( [_delegate revealControllerPanGestureShouldBegin:self] == NO )
