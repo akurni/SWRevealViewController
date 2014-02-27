@@ -605,7 +605,7 @@ static NSString * const SWSegueRightIdentifier = @"sw_right";
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    return UIInterfaceOrientationMaskAll;
 }
 
 // Support for earlier than iOS 6.0
