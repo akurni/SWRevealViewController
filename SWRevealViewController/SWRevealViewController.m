@@ -158,6 +158,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
         CGRect bounds = self.bounds;
     
         _frontView = [[UIView alloc] initWithFrame:bounds];
+        _frontView.backgroundColor = _c.frontViewBackgroundColor;
         _frontView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
 
         [self addSubview:_frontView];
@@ -194,11 +195,23 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
 
     CGRect bounds = self.bounds;
     
+    float yLocation = 0.0f;
+    if(_c.frontViewPosition == FrontViewPositionLeft) {
+        //scale back to normal
+        [_frontView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+    } else {
+        //scaledown
+        [_frontView setTransform:CGAffineTransformMakeScale(_c.frontViewScaleDownRatio, _c.frontViewScaleDownRatio)];
+        yLocation = bounds.size.height * ((1 - _c.frontViewScaleDownRatio) / 2);
+    }
+  
+    
+    
     CGFloat xLocation = [self frontLocationForPosition:_c.frontViewPosition];
     
     [self _layoutRearViewsForLocation:xLocation];
     
-    CGRect frame = CGRectMake(xLocation, 0.0f, bounds.size.width, bounds.size.height);
+    CGRect frame = CGRectMake(xLocation, yLocation, bounds.size.width, bounds.size.height);
     _frontView.frame = [self hierarchycalFrameAdjustment:frame];
     
     UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:_frontView.bounds];
@@ -407,6 +420,8 @@ const int FrontViewPositionNone = 0xff;
 
 - (void)_initDefaultProperties
 {
+    _frontViewScaleDownRatio = 1.0f;
+    _frontViewBackgroundColor = [UIColor blackColor];
     _frontViewPosition = FrontViewPositionLeft;
     _rearViewPosition = FrontViewPositionLeft;
     _rightViewPosition = FrontViewPositionLeft;
@@ -891,6 +906,10 @@ static NSString * const SWSegueRightIdentifier = @"sw_right";
 //    if ( recognizer != _panGestureRecognizer || _animationQueue.count != 0 )
 //        return NO;
     
+    if (_frontViewScaleDownRatio != 1.0f) {
+        return NO;
+    }
+    
     // forbid gesture if the following delegate is implemented and returns NO
     if ( [_delegate respondsToSelector:@selector(revealControllerPanGestureShouldBegin:)] )
         if ( [_delegate revealControllerPanGestureShouldBegin:self] == NO )
@@ -1131,6 +1150,8 @@ static NSString * const SWSegueRightIdentifier = @"sw_right";
 // Primitive method for view controller deployment and animated layout to the given position.
 - (void)_setFrontViewPosition:(FrontViewPosition)newPosition withDuration:(NSTimeInterval)duration
 {
+    _contentView.backgroundColor = self.frontViewBackgroundColor;
+    
     void (^rearDeploymentCompletion)() = [self _rearViewDeploymentForNewFrontViewPosition:newPosition];
     void (^rightDeploymentCompletion)() = [self _rightViewDeploymentForNewFrontViewPosition:newPosition];
     void (^frontDeploymentCompletion)() = [self _frontViewDeploymentForNewFrontViewPosition:newPosition];
